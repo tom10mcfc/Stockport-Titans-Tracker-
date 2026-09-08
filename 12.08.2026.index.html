@@ -2257,8 +2257,15 @@
     }
   </style>
   <style id="v67ManagerHomeCleanupStyle">
-    body.managerHomeV67 #home .managerDuplicateV67 {
+    body.managerHomeV67 #home #homeMatchCentre,
+    body.managerHomeV67 #home #homeSquad {
       display: none !important
+    }
+
+    body.managerHomeV67 #home #homeFixtures,
+    body.managerHomeV67 #home #homeResults,
+    body.managerHomeV67 #home #homeTraining {
+      display: flex !important
     }
 
     body.parentHomeV67 #home .managerDuplicateV67 {
@@ -2345,12 +2352,8 @@
         <div class="classicMenu" aria-label="Main app sections">
           <button type="button" onclick="view('potm')">🏆 Player of the Match Voting</button>
           <button type="button" onclick="view('leaders')">📊 Goals, Assists &amp; Leaderboards</button>
-          <button class="managerDuplicateV67" type="button" onclick="view('fixtures')">📅 Fixtures</button>
-          <button class="managerDuplicateV67" type="button" onclick="view('results')">✅ Results</button>
-          <button class="managerDuplicateV67" type="button" onclick="view('training')">🏃 Training</button>
-          <button id="homeMatchCentre" class="managerDuplicateV67" type="button" onclick="view('match')">⚽ Match
-            Centre</button>
-          <button id="homeSquad" class="managerDuplicateV67" type="button" onclick="view('squad')">👥 Squad</button>
+          <button id="homeFixtures" class="managerDuplicateV67" type="button" onclick="view('fixtures')">📅 Fixtures</button>
+          <button id="homeResults" class="managerDuplicateV67" type="button" onclick="view('results')">✅ Results</button>
         </div>
         <div class="classicHomeData hidden" aria-hidden="true">
           <div id="homeGoals"></div>
@@ -2680,7 +2683,7 @@ return monthLabelV55(k);
       if (squadPage) squadPage.setAttribute('aria-hidden', parent ? 'true' : 'false');
       /* V6.8: directly hide the five duplicate home buttons for managers. */
       var duplicates = document.querySelectorAll('#home .managerDuplicateV67');
-      duplicates.forEach(function (x) { x.style.setProperty('display', parent ? 'flex' : 'none', 'important') });
+      duplicates.forEach(function (x) { var managerOnly = (x.id === 'homeMatchCentre' || x.id === 'homeSquad'); x.style.setProperty('display', managerOnly ? (parent ? 'none' : 'flex') : 'flex', 'important'); });
     }
     function view(id) { if (profile && !isManagerRole() && (id === 'match' || id === 'squad')) id = 'home'; if (id === 'leaders') { refreshLeaderboardsV62(); refreshLeaderboardsV64(); setTimeout(refreshLeaderboardsV64, 20); } document.querySelectorAll('.page').forEach(function (x) { x.classList.add('hidden') }); E(id).classList.remove('hidden'); if (id === 'leaders') setTimeout(refreshLeaderboardsV62, 0); document.querySelectorAll('[data-view]').forEach(function (x) { x.classList.toggle('active', x.dataset.view === id) }) } async function update(fn) { clearErr(); try { await db.runTransaction(async function (tx) { var d = (await tx.get(teamRef)).data(); fn(d); tx.set(teamRef, d) }) } catch (e) { err(e.message) } } async function stat(id, k, n) { await update(function (d) { d.stats[id] = d.stats[id] || {}; d.stats[id][k] = Math.max(0, (d.stats[id][k] || 0) + n) }) } async function addFixture() { if (!E('fOpp').value.trim()) return; await update(function (d) { d.fixtures.push({ id: 'f_' + Date.now(), date: E('fDate').value, opponent: E('fOpp').value.trim(), kickoff: E('fTime').value.trim(), location: E('fLoc').value.trim() }) }) } async function addTraining() { if (!E('tDate').value) return; await update(function (d) { d.trainingSessions.push({ id: 't_' + Date.now(), date: E('tDate').value, time: E('tTime').value.trim(), location: E('tLoc').value.trim() }) }) } async function removeFixture(i) { if (confirm('Remove fixture?')) await update(function (d) { d.fixtures.splice(i, 1) }) } async function removeTraining(i) { if (confirm('Remove training?')) await update(function (d) { d.trainingSessions.splice(i, 1) }) } function imgData(f, max) { return new Promise(function (res) { var r = new FileReader(); r.onload = function (e) { var im = new Image(); im.onload = function () { var q = Math.min(max / im.width, max / im.height, 1), c = document.createElement('canvas'); c.width = im.width * q; c.height = im.height * q; c.getContext('2d').drawImage(im, 0, 0, c.width, c.height); res(c.toDataURL('image/jpeg', .76)) }; im.src = e.target.result }; r.readAsDataURL(f) }) } async function saveSettings() { var b = team.badgeURL || '', tp = team.teamPhotoURL || ''; if (E('aBadge').files[0]) b = await imgData(E('aBadge').files[0], 420); if (E('aTeamPhoto').files[0]) tp = await imgData(E('aTeamPhoto').files[0], 1000); await update(function (d) { d.name = E('aName').value.trim() || 'My Team'; d.primaryColour = E('aColour').value; d.badgeURL = b; d.teamPhotoURL = tp }) } async function childPhoto(i) { if (!i.files[0]) return; var u = await imgData(i.files[0], 260); await update(function (d) { d.stats[profile.playerId] = d.stats[profile.playerId] || {}; d.stats[profile.playerId].photoURL = u }) } function exportCSV() { var rows = [['Player', 'Goals', 'Assists', 'POTM', 'Match Attendance', 'Training Attendance']]; team.players.forEach(function (p) { var s = team.stats[p.id] || {}; rows.push([p.name, s.goals || 0, s.assists || 0, s.potm || 0, pct(p.id, 'matches'), pct(p.id, 'training')]) }); var csv = rows.map(function (r) { return r.map(function (x) { return '"' + String(x).replace(/"/g, '""') + '"' }).join(',') }).join('\n'), a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' })); a.download = code(team.name) + '_season.csv'; a.click() } async function newSeason() { if (!confirm('Reset season stats, fixtures, results and attendance but keep squad and photos?')) return; await update(function (d) { Object.keys(d.stats || {}).forEach(function (id) { var ph = d.stats[id].photoURL || '', nm = d.stats[id].name || ''; d.stats[id] = { name: nm, goals: 0, assists: 0, potm: 0, photoURL: ph } }); d.fixtures = []; d.results = []; d.trainingSessions = []; d.fixtureAvailability = {}; d.trainingAvailability = {}; d.attendance = { matches: [], training: [] }; d.potmVotes = {}; d.potmHistory = [] }) }
   </script>
@@ -2845,20 +2848,25 @@ return monthLabelV55(k);
   <script
     id="v67ManagerHomeCleanup">(function () { function applyV67() { if (!profile) return; document.body.classList.toggle('managerHomeV67', isManagerRole()); document.body.classList.toggle('parentHomeV67', !isManagerRole()) } var oldV67 = window.render; window.render = function () { oldV67(); applyV67() }; setTimeout(applyV67, 200) })();</script>
   <script
-    id="v68ManagerButtonsHardFix">(function () { function fix() { if (!window.profile) return; var hide = isManagerRole(); document.querySelectorAll('#home .managerDuplicateV67').forEach(function (x) { x.style.setProperty('display', hide ? 'none' : 'flex', 'important') }); } document.addEventListener('DOMContentLoaded', function () { setTimeout(fix, 50); setTimeout(fix, 300) }); var obs = new MutationObserver(function () { setTimeout(fix, 0) }); obs.observe(document.body, { childList: true, subtree: true }); window.addEventListener('click', function () { setTimeout(fix, 0) }); })();</script>
+    id="v68ManagerButtonsHardFix">(function () { function fix() { if (!window.profile) return; var parent = !isManagerRole(); document.querySelectorAll('#home .managerDuplicateV67').forEach(function (x) { var managerOnly = (x.id === 'homeMatchCentre' || x.id === 'homeSquad'); x.style.setProperty('display', managerOnly ? (parent ? 'none' : 'flex') : 'flex', 'important'); }); } document.addEventListener('DOMContentLoaded', function () { setTimeout(fix, 50); setTimeout(fix, 300) }); var obs = new MutationObserver(function () { setTimeout(fix, 0) }); obs.observe(document.body, { childList: true, subtree: true }); window.addEventListener('click', function () { setTimeout(fix, 0) }); })();</script>
   <script id="v69FinalHomeRoleFix">(function () {
       function finalHomeRoleFixV69() {
         if (!window.profile) return;
         var manager = isManagerRole();
         document.querySelectorAll('#home .managerDuplicateV67').forEach(function (x) {
           var managerOnly = (x.id === 'homeMatchCentre' || x.id === 'homeSquad');
-          var show = manager ? false : !managerOnly;
+          var show = (x.id === 'homeFixtures' || x.id === 'homeResults');
           x.style.setProperty('display', show ? 'flex' : 'none', 'important');
           x.hidden = !show;
         });
-        var mc = document.getElementById('homeMatchCentre'), sq = document.getElementById('homeSquad');
-        if (mc) { mc.hidden = true; mc.style.setProperty('display', 'none', 'important') }
-        if (sq) { sq.hidden = true; sq.style.setProperty('display', 'none', 'important') }
+        var tr = document.getElementById('homeTraining');
+        var mc = document.getElementById('homeMatchCentre');
+        var sq = document.getElementById('homeSquad');
+        [tr, mc, sq].forEach(function (button) {
+          if (!button) return;
+          button.hidden = true;
+          button.style.setProperty('display', 'none', 'important');
+        });
       }
       window.finalHomeRoleFixV69 = finalHomeRoleFixV69;
       var oldRenderV69 = window.render; window.render = function () { oldRenderV69(); finalHomeRoleFixV69(); setTimeout(finalHomeRoleFixV69, 30) };
@@ -3008,4 +3016,19 @@ window.deleteCurrentTeamV71 = async function(){
       window.renderAutoTrainingAttendance = window.renderTrainingAttendanceV70;
       var previousV70 = window.render; window.render = function () { previousV70(); setTimeout(renderTrainingAttendanceV70, 40) };
       setTimeout(renderTrainingAttendanceV70, 300);
-    })();</script></body></html>
+    })();</script>
+  <script id="v74PermanentlyRemoveBottomThree">
+    (function () {
+      function removeBottomThreeV74() {
+        ['homeTraining', 'homeMatchCentre', 'homeSquad'].forEach(function (id) {
+          var item = document.querySelector('button#' + id);
+          if (item) item.remove();
+        });
+      }
+      document.addEventListener('DOMContentLoaded', removeBottomThreeV74);
+      var observerV74 = new MutationObserver(removeBottomThreeV74);
+      observerV74.observe(document.documentElement, { childList: true, subtree: true });
+      removeBottomThreeV74();
+    })();
+  </script>
+</body></html>
