@@ -2354,6 +2354,7 @@
           <button type="button" onclick="view('leaders')">📊 Goals, Assists &amp; Leaderboards</button>
           <button id="homeFixtures" class="managerDuplicateV67" type="button" onclick="view('fixtures')">📅 Fixtures</button>
           <button id="homeResults" class="managerDuplicateV67" type="button" onclick="view('results')">✅ Results</button>
+          <button id="homeTrainingSchedule" type="button" onclick="view('training')">🏃 Training</button>
         </div>
         <div class="classicHomeData hidden" aria-hidden="true">
           <div id="homeGoals"></div>
@@ -3017,22 +3018,7 @@ window.deleteCurrentTeamV71 = async function(){
       var previousV70 = window.render; window.render = function () { previousV70(); setTimeout(renderTrainingAttendanceV70, 40) };
       setTimeout(renderTrainingAttendanceV70, 300);
     })();</script>
-  <script id="v74PermanentlyRemoveBottomThree">
-    (function () {
-      function removeBottomThreeV74() {
-        ['homeTraining', 'homeMatchCentre', 'homeSquad'].forEach(function (id) {
-          var item = document.querySelector('button#' + id);
-          if (item) item.remove();
-        });
-      }
-      document.addEventListener('DOMContentLoaded', removeBottomThreeV74);
-      var observerV74 = new MutationObserver(removeBottomThreeV74);
-      observerV74.observe(document.documentElement, { childList: true, subtree: true });
-      removeBottomThreeV74();
-    })();
-  </script>
-
-  <style id="v75WhatsAppGroupStyles">
+<style id="v75WhatsAppGroupStyles">
     #whatsappHeaderBtn {
       display: inline-flex;
       align-items: center;
