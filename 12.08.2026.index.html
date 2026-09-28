@@ -2289,7 +2289,46 @@
 .quickLinkHeaderV76{display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;padding:0;border-radius:50%;overflow:hidden;text-decoration:none;box-shadow:0 2px 10px rgba(0,0,0,.25);transition:transform .15s ease}.quickLinkHeaderV76:hover,.quickLinkHeaderV76:focus{transform:translateY(-1px)}.quickLinkHeaderV76.hidden{display:none!important}.quickLinkHeaderV76 svg,.quickLinkHeaderV76 img{width:100%;height:100%;display:block;object-fit:cover}.quickLinkSettingV76{display:block;margin-top:7px;color:var(--soft);font-size:12px;font-weight:900}.quickLinkSettingV76 input{margin-top:5px}.quickLinkHintV76{display:block;color:var(--muted);font-size:10px;font-weight:700;margin:1px 0 7px}#spondHeaderBtn{background:#fff;border:1px solid #fa4167}#tournifyHeaderBtn{background:#3518ff;border:1px solid #6f5aff}#websiteHeaderBtn{background:#111;border:1px solid #fff}
 </style><style id="v77PotmSaveFeedbackStyles">
 #potmSaveToastV77{position:fixed;left:50%;bottom:24px;z-index:100000;transform:translate(-50%,24px);min-width:260px;max-width:calc(100vw - 28px);padding:13px 17px;border-radius:16px;background:#11131a;border:1px solid color-mix(in srgb,var(--p) 65%,#fff);box-shadow:0 14px 40px rgba(0,0,0,.45);color:#fff;text-align:center;font-weight:900;opacity:0;pointer-events:none;transition:opacity .18s ease,transform .18s ease}#potmSaveToastV77.show{opacity:1;transform:translate(-50%,0)}#potmSaveToastV77.saving{color:var(--soft)}#potmSaveToastV77.success{border-color:#44dd88;color:#caffde}.potmSaveV61[disabled]{opacity:.65;cursor:wait}.potmSavingSpinnerV77{display:inline-block;width:14px;height:14px;margin-right:7px;border:2px solid rgba(255,255,255,.35);border-top-color:currentColor;border-radius:50%;vertical-align:-2px;animation:potmSpinV77 .7s linear infinite}@keyframes potmSpinV77{to{transform:rotate(360deg)}}
-</style><style id="v81AdminResultPotmStyles">#adminResultEntry .resultPlayerPotmV81{grid-template-columns:minmax(180px,1fr) 110px 110px 74px 82px!important}.resultPotmPickV81{display:flex!important;align-items:center!important;justify-content:center!important;color:#ffd700!important;font-weight:1000!important}.resultPotmPickV81 input{display:inline-block!important;visibility:visible!important;opacity:1!important;appearance:auto!important;width:18px!important;height:18px!important;margin:0 4px 0 0!important;accent-color:#ff4fa3!important}.resultPotmHeadingV81{color:#ffd700!important;margin-top:9px!important}@media(max-width:720px){#adminResultEntry .resultPlayerPotmV81{grid-template-columns:minmax(105px,1fr) 78px 78px 55px 65px!important;font-size:11px!important}}</style></head>
+</style><style id="v81AdminResultPotmStyles">#adminResultEntry .resultPlayerPotmV81{grid-template-columns:minmax(180px,1fr) 110px 110px 74px 82px!important}.resultPotmPickV81{display:flex!important;align-items:center!important;justify-content:center!important;color:#ffd700!important;font-weight:1000!important}.resultPotmPickV81 input{display:inline-block!important;visibility:visible!important;opacity:1!important;appearance:auto!important;width:18px!important;height:18px!important;margin:0 4px 0 0!important;accent-color:#ff4fa3!important}.resultPotmHeadingV81{color:#ffd700!important;margin-top:9px!important}@media(max-width:720px){#adminResultEntry .resultPlayerPotmV81{grid-template-columns:minmax(105px,1fr) 78px 78px 55px 65px!important;font-size:11px!important}}</style><style id="v82MobileResultTidyStyles">
+@media(max-width:720px){
+  #adminResultEntry{overflow:hidden!important}
+  #adminResultEntry .resultHeader.resultPlayerPotmV81{display:none!important}
+  #adminResultEntry .resultPlayerPotmV81:not(.resultHeader){
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;
+    grid-template-areas:"name name" "goals assists" "potm played"!important;
+    gap:8px 10px!important;
+    align-items:center!important;
+    padding:12px 0!important;
+    min-height:0!important;
+  }
+  #adminResultEntry .resultPlayerPotmV81:not(.resultHeader)>b{
+    grid-area:name!important;
+    font-size:16px!important;
+    padding:0 0 2px!important;
+  }
+  #adminResultEntry .resultPlayerPotmV81:not(.resultHeader)>.miniCounter:nth-of-type(1){grid-area:goals!important}
+  #adminResultEntry .resultPlayerPotmV81:not(.resultHeader)>.miniCounter:nth-of-type(2){grid-area:assists!important}
+  #adminResultEntry .resultPlayerPotmV81 .miniCounter{width:100%!important;max-width:none!important;height:38px!important}
+  #adminResultEntry .resultPlayerPotmV81 .resultPotmPickV81{
+    grid-area:potm!important;justify-content:flex-start!important;gap:6px!important;
+    min-height:38px!important;padding:7px 10px!important;border:1px solid #7f6810!important;
+    border-radius:12px!important;background:rgba(255,215,0,.06)!important;
+  }
+  #adminResultEntry .resultPlayerPotmV81 .resultPotmPickV81:after{content:'POTM';color:#ffd700;font-size:12px;font-weight:1000}
+  #adminResultEntry .resultPlayerPotmV81:not(.resultHeader)>label:last-child{
+    grid-area:played!important;display:flex!important;align-items:center!important;justify-content:flex-start!important;
+    gap:7px!important;min-height:38px!important;padding:7px 10px!important;border:1px solid rgba(255,255,255,.12)!important;
+    border-radius:12px!important;background:rgba(255,255,255,.035)!important;
+  }
+  #adminResultEntry .resultPlayerPotmV81 input[type=radio],
+  #adminResultEntry .resultPlayerPotmV81 input[type=checkbox]{width:20px!important;height:20px!important;margin:0!important;flex:0 0 auto!important}
+  #adminResultEntry .ownGoalRow{margin-top:8px!important}
+  #adminResultEntry .resultScoreCard{grid-template-columns:1fr auto 1fr!important;gap:8px!important;padding:12px 10px!important}
+  #adminResultEntry .resultTeam{font-size:15px!important;line-height:1.15!important;overflow-wrap:anywhere!important}
+  #adminResultEntry .resultScoreDisplay{font-size:26px!important;white-space:nowrap!important}
+}
+</style></head>
 
 <body>
   <div class="app">
