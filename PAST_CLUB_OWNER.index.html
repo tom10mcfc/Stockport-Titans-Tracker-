@@ -2341,7 +2341,7 @@
 /* Hide only the extra Home / Match Centre / Fixtures navigation row
    when a Club Owner has opened a team. */
 body.teamModeV91 #main > nav.nav{display:none!important}
-</style></head>
+</style><style id="clubCodeV98">#clubCodeBannerV98{margin:6px 0 0;color:#ff4fa3;font-weight:800;font-size:14px}.hiddenClubCodeV98{display:none}</style></head>
 
 <body>
   <div class="app">
@@ -3237,4 +3237,99 @@ document.addEventListener('DOMContentLoaded',function(){setTimeout(function(){if
   var oldRenderV93=window.render;window.render=function(){oldRenderV93();ensureBackButtonV93()};
   document.addEventListener('DOMContentLoaded',function(){ensureSignupV93();setTimeout(ensureBackButtonV93,300)});
 })();
-</script></body></html>
+</script><script id="roleLandingDashboardV97">
+(function(){
+  'use strict';
+  var teamOpenedV97=false;
+
+  function roleV97(){return window.profile&&profile.role||''}
+  function needsClubDashboardV97(){return roleV97()==='manager'||roleV97()==='staff'||roleV97()==='club-owner'}
+  function goesStraightToTeamV97(){return roleV97()==='parent'||roleV97()==='manager-parent'}
+  function isLimitedClubUserV97(){return roleV97()==='manager'||roleV97()==='staff'}
+  function assignedTeamsV97(){var a=[].concat((profile&&profile.teamCodes)||[],profile&&profile.teamCode,profile&&profile.currentTeamCode).filter(Boolean).map(code);return Array.from(new Set(a))}
+
+  function installStylesV97(){
+    if(E('roleLandingStylesV97'))return;
+    var st=document.createElement('style');st.id='roleLandingStylesV97';st.textContent=`
+      body.clubMemberDashboardV97 #clubOwnerDashboardV91{display:block!important;margin-top:10px!important}
+      body.clubMemberDashboardV97 #home,
+      body.clubMemberDashboardV97 #latestWinnerBanner,
+      body.clubMemberDashboardV97 #main>nav.nav{display:none!important}
+      body.clubMemberDashboardV97 .clubStatsV91,
+      body.clubMemberDashboardV97 .compactClubStatsV95,
+      body.clubMemberDashboardV97 .ownerToolsV91,
+      body.clubMemberDashboardV97 .registeredUsersV92,
+      body.clubMemberDashboardV97 .clubOwnerHeroV91{display:none!important}
+      body.clubMemberDashboardV97 .clubTeamsV91{display:block!important;margin:0!important}
+      body.clubMemberDashboardV97 #adminBtn,
+      body.clubMemberDashboardV97 #clubOwnerBackV93{display:none!important}
+      body.clubMemberDashboardV97 .header .sub{display:none!important}
+      body.clubMemberDashboardV97 .page{display:none!important}
+      body.clubMemberDashboardV97 .clubTeamsFirstV95{display:block!important}
+      @media(max-width:650px){
+        body.clubMemberDashboardV97 .ownerTeamSelectV92{display:grid!important;grid-template-columns:1fr!important;gap:7px!important}
+        body.clubMemberDashboardV97 .ownerTeamSelectV92 select,
+        body.clubMemberDashboardV97 .ownerTeamSelectV92 button{width:100%!important;min-height:42px!important;margin:0!important}
+      }
+    `;document.head.appendChild(st)
+  }
+
+  function fillAssignedTeamsV97(){
+    var s=E('clubTeamSelectV92');if(!s)return;
+    var current=code(profile.currentTeamCode||profile.teamCode||'');
+    s.innerHTML='<option value="">Select a team...</option>'+assignedTeamsV97().map(function(tc){return '<option value="'+esc(tc)+'" '+(tc===current?'selected':'')+'>'+esc(tc)+'</option>'}).join('')
+  }
+
+  function showClubDashboardV97(){
+    if(!needsClubDashboardV97())return;
+    teamOpenedV97=false;
+    document.body.classList.remove('teamModeV91');
+    if(roleV97()==='club-owner'){
+      document.body.classList.remove('clubMemberDashboardV97');
+      document.body.classList.add('clubOwnerV91');
+      if(typeof window.renderClubOwnerV91==='function')window.renderClubOwnerV91();
+      return;
+    }
+    document.body.classList.remove('clubOwnerV91');
+    document.body.classList.add('clubMemberDashboardV97');
+    var title=E('teamName');if(title)title.textContent=(team&&team.clubName)||'Club Dashboard';
+    var role=E('role');if(role)role.textContent=roleV97()==='manager'?'Manager':'Staff';
+    fillAssignedTeamsV97();
+  }
+
+  window.openSelectedTeamForRoleV97=async function(){
+    var s=E('clubTeamSelectV92');if(!s||!s.value)return err('Select a team.');
+    var tc=code(s.value);if(assignedTeamsV97().indexOf(tc)<0)return err('This team is not assigned to your account.');
+    teamOpenedV97=true;
+    document.body.classList.remove('clubMemberDashboardV97','clubOwnerV91');
+    document.body.classList.add('teamModeV91');
+    if(typeof window.openOwnerTeamV91==='function')return window.openOwnerTeamV91(tc)
+  };
+
+  window.openSelectedOwnerTeamV92=function(){return window.openSelectedTeamForRoleV97()};
+
+  window.backToRoleDashboardV97=function(){teamOpenedV97=false;showClubDashboardV97();window.scrollTo({top:0,behavior:'smooth'})};
+
+  function fixBackButtonV97(){
+    var b=E('clubOwnerBackV93');if(!b)return;
+    if(needsClubDashboardV97())b.onclick=window.backToRoleDashboardV97;
+  }
+
+  function applyLandingV97(){
+    installStylesV97();
+    fixBackButtonV97();
+    if(goesStraightToTeamV97()){
+      document.body.classList.remove('clubMemberDashboardV97');
+      return;
+    }
+    if(isLimitedClubUserV97()&&!teamOpenedV97)showClubDashboardV97();
+    if(roleV97()==='club-owner'&&!teamOpenedV97&&document.body.classList.contains('clubOwnerV91'))fillAssignedTeamsV97();
+  }
+
+  var oldRenderV97=window.render;
+  if(typeof oldRenderV97==='function')window.render=function(){oldRenderV97.apply(this,arguments);setTimeout(applyLandingV97,0)};
+
+  document.addEventListener('DOMContentLoaded',function(){setTimeout(applyLandingV97,100);setTimeout(applyLandingV97,600)});
+})();
+</script>
+<script id="clubCodeBannerPatchV98">(function(){function apply(){if(!window.profile)return;var grow=document.querySelector('.header .grow');if(!grow)return;var el=document.getElementById('clubCodeBannerV98');if(!el){el=document.createElement('div');el.id='clubCodeBannerV98';grow.appendChild(el);}var show=(profile.role==='club-owner'||profile.role==='manager'||profile.role==='staff');var code=(profile.clubCode||(window.team&&team.clubCode)||'');el.textContent=code?('Club Code: '+code):'';el.style.display=(show&&code)?'block':'none';}var r=window.render;if(typeof r==='function'){window.render=function(){r.apply(this,arguments);setTimeout(apply,0);};}document.addEventListener('DOMContentLoaded',function(){setTimeout(apply,200);});})();</script></body></html>
